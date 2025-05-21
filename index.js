@@ -3,9 +3,9 @@ import { chromium } from 'playwright';
 
 const app = express();
 
-// Root health check so Render doesn’t show "APPLICATION LOADING" on /
-app.get('/', (req, res) => {
-  res.send('✅ LaundryTracker API is running!');
+// Health check for /
+app.get('/', (_req, res) => {
+  res.send('✅ LaundryTracker API up');
 });
 
 app.get('/laundry-status', async (req, res) => {
@@ -16,20 +16,26 @@ app.get('/laundry-status', async (req, res) => {
 
   let browser;
   try {
-    // Launch Chromium in no-sandbox mode for Render
-    browser = await chromium.launch({ args: ['--no-sandbox'] });
+    browser = await chromium.launch({
+      headless: true,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-gpu',
+      ]
+    });
     const page = await browser.newPage();
 
-    // Navigate and wait for network idle to start JS
+    // Go to the LaundryView page
     await page.goto(roomUrl, { waitUntil: 'networkidle' });
 
-    // Give Vue a bit more time to render the table
-    await page.waitForTimeout(8000);
+    // Wait up to 15 s for Vue to render
+    await page.waitForTimeout(15000);
 
-    // Scrape all rows in the LaundryView status table
-    const machines = await page.$$eval(
-      'table#statusTable tbody tr',
-      rows => rows.map(r => {
+    // Grab all table rows
+    const machines = await page.$$eval('table#statusTable tbody tr', rows =>
+      rows.map(r => {
         const cols = r.querySelectorAll('td');
         return {
           machine: cols[1]?.innerText.trim() || '',
@@ -39,18 +45,20 @@ app.get('/laundry-status', async (req, res) => {
       })
     );
 
-    // Close the browser and return JSON
+    if (!machines.length) {
+      // If still empty, dump the HTML to logs for debugging
+      const html = await page.content();
+      console.error('No rows found—page content was:\n', html);
+    }
+
     await browser.close();
-    res.json(machines);
+    return res.json(machines);
   } catch (err) {
     console.error('Scrape error:', err);
     if (browser) await browser.close();
-    res.status(500).json({ error: err.toString() });
+    return res.status(500).json({ error: err.toString() });
   }
 });
 
-// Use PORT env var (Render sets a random high port), fallback to 3000
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Listening on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`🚀 Listening on port ${PORT}`));
