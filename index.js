@@ -12,6 +12,10 @@ app.get('/laundry-status', async (req, res) => {
     const page = await browser.newPage();
     await page.goto(roomUrl, { waitUntil: 'networkidle' });
 
+    // WAIT for the status table to render
+    await page.waitForSelector('table#statusTable tbody tr', { timeout: 10000 });
+
+    // Now grab all rows
     const machines = await page.$$eval(
       'table#statusTable tbody tr',
       rows => rows.map(r => {
@@ -27,6 +31,7 @@ app.get('/laundry-status', async (req, res) => {
     await browser.close();
     res.json(machines);
   } catch (err) {
+    console.error("Scrape error:", err);
     res.status(500).json({ error: err.toString() });
   }
 });
