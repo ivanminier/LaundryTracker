@@ -2,6 +2,6 @@ services:
   - type: web
     name: laundry-backend
     runtime: python
-    buildCommand: "pip install -r requirements.txt && playwright install"
+    buildCommand: "python3 -m pip install -r requirements.txt && python3 -m playwright install"
     startCommand: "gunicorn laundry_backend:app"
     envVars: []
