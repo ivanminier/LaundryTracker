@@ -1,19 +1,17 @@
-# Use Playwright’s official image (includes all browser dependencies)
+# Use Playwright’s official image (includes all browser deps)
 FROM mcr.microsoft.com/playwright:v1.30.0-focal
 
 # Set working directory
 WORKDIR /app
 
-# Copy package manifest and install deps
-COPY package.json package-lock.json ./
-RUN npm ci
+# Copy only package.json and install
+COPY package.json ./
+RUN npm install
 
-# Copy the rest of the code
+# Copy the rest of your code
 COPY . .
 
-# Expose the port Render will use
+# Expose port and start
 ENV PORT 3000
 EXPOSE 3000
-
-# Launch the app
 CMD ["node", "index.js"]
