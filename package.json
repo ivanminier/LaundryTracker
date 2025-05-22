@@ -1,7 +1,6 @@
 {
   "name": "uvm-laundry-link",
   "version": "0.1.0",
-  // ← Add this line so GitHub Pages knows where to host it:
   "homepage": "https://ivanminier.github.io/uvm-laundry-link",
   "private": true,
   "dependencies": {
@@ -9,19 +8,16 @@
     "react": "^18.x",
     "react-dom": "^18.x",
     "react-scripts": "5.0.1"
-    // …other front-end deps…
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    // ← These two lines hook into `npm run deploy`:
     "predeploy": "npm run build",
     "deploy":   "gh-pages -d build",
     "test":  "react-scripts test",
     "eject": "react-scripts eject"
   },
   "devDependencies": {
-    // ← Install this next:
     "gh-pages": "^5.0.0"
   },
   "browserslist": {
