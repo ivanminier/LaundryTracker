@@ -1,31 +1,39 @@
 {
-  {
   "name": "uvm-laundry-link",
   "version": "0.1.0",
-+ "homepage": "https://ivanminier.github.io/uvm-laundry-link",
+  // ← Add this line so GitHub Pages knows where to host it:
+  "homepage": "https://ivanminier.github.io/uvm-laundry-link",
+  "private": true,
+  "dependencies": {
+    "lucide-react": "^<your-installed-version>", 
+    "react": "^18.x",
+    "react-dom": "^18.x",
+    "react-scripts": "5.0.1"
+    // …other front-end deps…
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-+   "predeploy": "npm run build",
-+   "deploy":   "gh-pages -d build",
+    // ← These two lines hook into `npm run deploy`:
+    "predeploy": "npm run build",
+    "deploy":   "gh-pages -d build",
     "test":  "react-scripts test",
     "eject": "react-scripts eject"
   },
-  // …rest stays the same
-}
-  "name": "laundry-backend",
-  "version": "1.0.0",
-  "type": "module",
-  "main": "index.js",
-  "scripts": {
-    "start": "node index.js",
-    "postinstall": "playwright install"
+  "devDependencies": {
+    // ← Install this next:
+    "gh-pages": "^5.0.0"
   },
-  "dependencies": {
-    "express": "^4.18.2",
-    "playwright": "^1.30.0"
-  },
-  "engines": {
-    "node": ">=16"
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
 }
